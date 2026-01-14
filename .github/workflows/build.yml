@@ -24,7 +24,10 @@ jobs:
 
       - name: Install Times New Roman fonts
         run: |
+          # Enable contrib repository for mscorefonts
+          echo "deb http://deb.debian.org/debian testing contrib" >> /etc/apt/sources.list
           apt-get update
+          apt-get install -y cabextract
           echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | debconf-set-selections
           apt-get install -y ttf-mscorefonts-installer fontconfig
           fc-cache -f -v
