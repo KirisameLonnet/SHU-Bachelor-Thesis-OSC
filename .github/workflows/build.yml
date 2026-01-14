@@ -56,11 +56,5 @@ jobs:
         with:
           tag_name: ${{ steps.release_info.outputs.tag_name }}
           name: ${{ steps.release_info.outputs.release_name }}
-          body: |
-            📄 **自动构建的论文 PDF**
-
-            - **提交**: [`${{ github.sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
-            - **分支**: `${{ github.ref_name }}`
-            - **构建时间**: ${{ steps.release_info.outputs.tag_name }}
           files: build/${{ steps.release_info.outputs.pdf_name }}
           fail_on_unmatched_files: true
