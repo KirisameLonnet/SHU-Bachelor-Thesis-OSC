@@ -1,0 +1,30 @@
+name: Build Thesis PDF
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+  workflow_dispatch:
+
+jobs:
+  build_paper:
+    runs-on: ubuntu-latest
+    container:
+      image: texlive/texlive:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Grant execution permission
+        run: chmod +x scripts/build.sh
+
+      - name: Compile LaTeX
+        run: bash scripts/build.sh xebib
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SHU-Bachelor-Thesis-PDF
+          path: build/main.pdf
+          if-no-files-found: error
