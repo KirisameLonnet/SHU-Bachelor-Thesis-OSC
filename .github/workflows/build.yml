@@ -49,10 +49,10 @@ jobs:
           tag_name: ${{ steps.tag.outputs.tag_name }}
           name: ${{ steps.tag.outputs.release_name }}
           body: |
-            📄 **自动构建的论文 PDF**
+            **Auto build PDF**
 
-            - **提交**: [`${{ github.sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
-            - **分支**: `${{ github.ref_name }}`
-            - **构建时间**: ${{ steps.tag.outputs.tag_name }}
+            - **Commit**: [`${{ github.sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
+            - **Branch**: `${{ github.ref_name }}`
+            - **Time**: ${{ steps.tag.outputs.tag_name }}
           files: build/main.pdf
           fail_on_unmatched_files: true
