@@ -22,37 +22,45 @@ jobs:
       - name: Grant execution permission
         run: chmod +x scripts/build.sh
 
+      - name: Install Times New Roman fonts
+        run: |
+          apt-get update
+          echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | debconf-set-selections
+          apt-get install -y ttf-mscorefonts-installer fontconfig
+          fc-cache -f -v
+
       - name: Compile LaTeX
         run: bash scripts/build.sh xebib
+
+      - name: Generate release info and rename PDF
+        id: release_info
+        run: |
+          DATE=$(date +'%Y%m%d')
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          PDF_NAME="SHUBachelorThesisExample_${DATE}_${SHORT_SHA}.pdf"
+          mv build/main.pdf "build/${PDF_NAME}"
+          echo "pdf_name=${PDF_NAME}" >> $GITHUB_OUTPUT
+          echo "tag_name=build-${DATE}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "release_name=Build ${DATE} (${SHORT_SHA})" >> $GITHUB_OUTPUT
 
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
           name: SHU-Bachelor-Thesis-PDF
-          path: build/main.pdf
+          path: build/${{ steps.release_info.outputs.pdf_name }}
           if-no-files-found: error
-
-      - name: Generate release tag
-        if: github.event_name == 'push'
-        id: tag
-        run: |
-          DATE=$(date +'%Y.%m.%d')
-          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-          TAG_NAME="build-${DATE}-${SHORT_SHA}"
-          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
-          echo "release_name=Build ${DATE} (${SHORT_SHA})" >> $GITHUB_OUTPUT
 
       - name: Create Release and Upload PDF
         if: github.event_name == 'push'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.tag.outputs.tag_name }}
-          name: ${{ steps.tag.outputs.release_name }}
+          tag_name: ${{ steps.release_info.outputs.tag_name }}
+          name: ${{ steps.release_info.outputs.release_name }}
           body: |
             📄 **自动构建的论文 PDF**
 
             - **提交**: [`${{ github.sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
             - **分支**: `${{ github.ref_name }}`
-            - **构建时间**: ${{ steps.tag.outputs.tag_name }}
-          files: build/main.pdf
+            - **构建时间**: ${{ steps.release_info.outputs.tag_name }}
+          files: build/${{ steps.release_info.outputs.pdf_name }}
           fail_on_unmatched_files: true
