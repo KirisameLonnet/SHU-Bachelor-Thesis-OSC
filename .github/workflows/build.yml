@@ -44,7 +44,7 @@ jobs:
           mv build/main.pdf "build/${PDF_NAME}"
           echo "pdf_name=${PDF_NAME}" >> $GITHUB_OUTPUT
           echo "tag_name=build-${DATE}-${SHORT_SHA}" >> $GITHUB_OUTPUT
-          echo "release_name=Build ${DATE} (${SHORT_SHA})" >> $GITHUB_OUTPUT
+          echo "release_name=PDF Review ${DATE} (${SHORT_SHA})" >> $GITHUB_OUTPUT
 
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
